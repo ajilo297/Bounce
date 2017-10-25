@@ -38,10 +38,10 @@ public class MainActivity extends AppCompatActivity implements OnBlockHitListene
             public void onGlobalLayout() {
                 field.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 ballArrayList.add(addBall(context, field, new CoordinatePair<>((float)field.getWidth()/2,
-                        (float)(field.getHeight()) - 50),new CoordinatePair<>(-25f,-25f)));
+                        (float)(field.getHeight()) - 50),new CoordinatePair<>(-15f,-15f)));
                 Log.d(TAG, "All balls released");
                 setBlocks();
-                addMoreBalls();
+//                addMoreBalls();
                 startMove.run();
             }
         });
