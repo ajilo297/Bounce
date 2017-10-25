@@ -1,7 +1,7 @@
 package ajil.com.bounce;
 
 /**
- * Created by ajilo on 24-10-2017.
+ * Created by ajilo on 24-10-2017. Class to contain data corresponding to x and y coordinates
  */
 
 public class CoordinatePair<T> {

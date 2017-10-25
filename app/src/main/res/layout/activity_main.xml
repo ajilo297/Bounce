@@ -20,7 +20,7 @@
     <LinearLayout
         android:id="@+id/control"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="70dp"
         android:background="?colorPrimary"
         android:orientation="vertical" />
 
