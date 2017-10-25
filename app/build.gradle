@@ -22,7 +22,7 @@ android {
 allprojects {
     repositories {
         jcenter()
-        maven{
+        maven {
             url "https://maven.google.com"
         }
     }

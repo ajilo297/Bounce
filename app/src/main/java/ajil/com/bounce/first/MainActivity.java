@@ -1,4 +1,4 @@
-package ajil.com.bounce;
+package ajil.com.bounce.first;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -12,6 +12,8 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+
+import ajil.com.bounce.R;
 
 public class MainActivity extends AppCompatActivity implements OnBlockHitListener {
 

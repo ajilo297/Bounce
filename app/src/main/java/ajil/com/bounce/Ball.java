@@ -2,111 +2,88 @@ package ajil.com.bounce;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
+import android.os.Handler;
+import android.widget.ImageView;
 
 /**
- * Created by ajilo on 24-10-2017. Class for ball params
+ * Created by ajilo on 25-10-2017.
  */
 
 public class Ball extends android.support.v7.widget.AppCompatImageView {
 
-    private static final String TAG = "BALL";
+    private Context context;
+    private ValuePair<Integer> velocity;
     private Drawable drawable;
-    private int ballId;
-    private float vx = 5, vy = 3;
-    public boolean isGravityOn;
-    public static final int DELECTION_LEFT = 1;
-    public static final int DELECTION_TOP = 2;
-    public static final int DELECTION_RIGHT = 3;
-    public static final int DELECTION_BOTTOM = 4;
+    private int drawHeight;
+    private int drawWidth;
 
     public Ball(Context context) {
         super(context);
+        this.context = context;
     }
 
-    public Ball(Context context, Drawable drawable, int ballId, CoordinatePair<Float> center, CoordinatePair<Float> velocity) {
+    public Ball(Context context, Drawable drawable) {
         super(context);
+        this.context = context;
         this.drawable = drawable;
+        drawHeight = drawable.getIntrinsicHeight();
+        drawWidth = drawable.getIntrinsicWidth();
         this.setImageDrawable(drawable);
-        this.ballId = ballId;
-        this.setCenter(center);
-        this.setVelocity(velocity);
-        Log.e(TAG, "Ball dropped");
+        this.setEnabled(false);
     }
 
-    public float getRadius () {
-        return this.getDrawHeight() / 2;
+    public float getRadius() {
+        return (float) drawable.getIntrinsicWidth() / 2;
     }
 
-    public float getVx() {
-        return vx;
+    public ValuePair<Float> getCenter() {
+        float x = this.getX() + this.getRadius();
+        float y = this.getY() + this.getRadius();
+        return new ValuePair<>(x, y);
     }
 
-    public void setVx(float vx) {
-        this.vx = vx;
+    public ValuePair<Float> getCoordinateFor(ValuePair<Float> center) {
+        float x = center.getX() - this.getRadius();
+        float y = center.getY() - this.getRadius();
+        return new ValuePair<>(x,y);
     }
 
-    public float getVy() {
-        return vy;
+    public void setBallAtCoordinate(ValuePair<Float> coordinate) {
+        this.setX(coordinate.getX());
+        this.setY(coordinate.getY());
     }
 
-    public void setVy(float vy) {
-        this.vy = vy;
+    public ValuePair<Integer> getVelocity() {
+        return velocity;
     }
 
-    public int getDrawWidth() {
-        return drawable.getIntrinsicWidth();
+    public void setVelocity(ValuePair<Integer> velocity) {
+        this.velocity = velocity;
     }
 
     public int getDrawHeight() {
-        return drawable.getIntrinsicHeight();
+        return drawHeight;
     }
 
-    public int getBallId() {
-        return ballId;
+    public void setDrawHeight(int drawHeight) {
+        this.drawHeight = drawHeight;
     }
 
-    public CoordinatePair<Float> getCenter() {
-        float centerX = this.getX() + (getDrawWidth() / 2);
-        float centerY = this.getY() + (getDrawHeight() / 2);
-        return new CoordinatePair<>(centerX, centerY);
+    public int getDrawWidth() {
+        return drawWidth;
     }
 
-    public CoordinatePair<Float> getVelocity() {
-        return new CoordinatePair<>(getVx(), getVy());
+    public void setDrawWidth(int drawWidth) {
+        this.drawWidth = drawWidth;
     }
 
-    public void setVelocity(CoordinatePair<Float> velocity) {
-        this.vx = velocity.getX();
-        this.vy = velocity.getY();
-    }
-
-    public void setCenter(CoordinatePair<Float> center) {
-        float x = center.getX();
-        float y = center.getY();
-
-        this.setX(x - this.getRadius());
-        this.setY(y - this.getRadius());
-    }
-
-    public void addGravity() {
-        isGravityOn = true;
-    }
-
-    public int getDeflectionSide(CoordinatePair<Float> coordinatePair) {
-        CoordinatePair<Float> c1 = new CoordinatePair<>(this.getX(), this.getY());
-        CoordinatePair<Float> c2 = new CoordinatePair<>(this.getX() + this.getWidth(), this.getY());
-        CoordinatePair<Float> c3 = new CoordinatePair<>(this.getX(), this.getY() + this.getHeight());
-        CoordinatePair<Float> c4 = new CoordinatePair<>(this.getX() + this.getWidth(), this.getY() + this.getHeight());
-
-        if (coordinatePair.getX() < c1.getX() && coordinatePair.getY() < c1.getY()) {
-            return DELECTION_TOP;
-        } else if (coordinatePair.getX() < c1.getX() && coordinatePair.getY() > c1.getY() && coordinatePair.getY() < c3.getY()) {
-            return DELECTION_LEFT;
-        } else if (coordinatePair.getX() > c2.getX() && coordinatePair.getY() > c2.getY() && coordinatePair.getY() < c3.getY()) {
-            return DELECTION_RIGHT;
-        } else {
-            return DELECTION_BOTTOM;
-        }
+    public void hitWall() {
+        this.setEnabled(true);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Ball.this.setEnabled(false);
+            }
+        }, 50);
     }
 }

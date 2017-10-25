@@ -1,9 +1,11 @@
-package ajil.com.bounce;
+package ajil.com.bounce.first;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
+
+import ajil.com.bounce.R;
 
 /**
  * Created by ajil on 25/10/17.
