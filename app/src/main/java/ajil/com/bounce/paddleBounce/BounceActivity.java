@@ -1,4 +1,4 @@
-package ajil.com.bounce;
+package ajil.com.bounce.paddleBounce;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -20,7 +20,7 @@ public class BounceActivity extends AppCompatActivity implements OnViewPanListen
     private ArrayList<Ball> ballArrayList = new ArrayList<>();
     private Context context;
     private Handler movementHandler;
-    private static final int t = 1;
+    private static final float t = 1f;
     public static final int FIELD_NONE = 0;
     public static final int FIELD_HORIZONTAL = 1;
     public static final int FIELD_VERTICAL = 2;
@@ -114,8 +114,8 @@ public class BounceActivity extends AppCompatActivity implements OnViewPanListen
         float initialX = ball.getX();
         float initialY = ball.getY();
 
-        int deltaX = ball.getVelocity().getX() * t;
-        int deltaY = ball.getVelocity().getY() * t;
+        float deltaX = ball.getVelocity().getX() * t;
+        float deltaY = ball.getVelocity().getY() * t;
 
         float finalX = initialX + deltaX;
         float finalY = initialY + deltaY;
@@ -136,9 +136,13 @@ public class BounceActivity extends AppCompatActivity implements OnViewPanListen
         ball.setX(finalX);
         ball.setY(finalY);
 
-        if (ball.getY() > field.getHeight() + 100 || ball.getX() > field.getWidth() + 100) {
-            reset();
+        if (ball.getY() + ball.getDrawHeight() > paddle.getY()) {
+            disqualify();
         }
+
+//        if (ball.getY() > field.getHeight() + 100 || ball.getX() > field.getWidth() + 100) {
+//            disqualify();
+//        }
 
     }
 
@@ -172,11 +176,25 @@ public class BounceActivity extends AppCompatActivity implements OnViewPanListen
     }
 
     private void reset() {
-        movementHandler.removeCallbacks(moveRunnable);
-        field.removeAllViews();
         ballArrayList = new ArrayList<>();
         movementHandler.post(moveRunnable);
         setupPaddle();
         setUpBall();
+    }
+
+    private void disqualify () {
+        movementHandler.removeCallbacks(moveRunnable);
+        for (Ball ball : ballArrayList) {
+            field.removeView(ball);
+        }
+        ballArrayList = new ArrayList<>();
+        touchView.setOnTouchListener(null);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                finish();
+
+            }
+        }, 2000);
     }
 }

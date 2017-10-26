@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ajil.com.bounce.BounceActivity">
+    tools:context="ajil.com.bounce.paddleBounce.BounceActivity">
 
     <!--<android.support.constraint.Guideline-->
         <!--android:id="@+id/guideline"-->
@@ -93,7 +93,7 @@
 
     </FrameLayout>
 
-    <ajil.com.bounce.GestureView
+    <ajil.com.bounce.paddleBounce.GestureView
         android:id="@+id/touch"
         android:layout_width="0dp"
         android:layout_height="0dp"

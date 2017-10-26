@@ -1,0 +1,34 @@
+package ajil.com.bounce;
+
+import android.content.Context;
+import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+
+import ajil.com.bounce.obstructionBounce.PaddleBounceActivity;
+
+public class StartActivity extends AppCompatActivity {
+
+    public static final int TYPE_BALL = 1;
+    public static final int TYPE_FIELD = 2;
+
+    public static final int TYPE_VERTICAL = 3;
+    public static final int TYPE_HORIZONTAL = 4;
+//    public static final int TYPE_FIELD = 0;
+//    public static final int TYPE_FIELD = 0;
+
+    private Context context;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_start);
+        context = StartActivity.this;
+    }
+
+    public void startBounce(View view) {
+        Intent intent = new Intent(context, PaddleBounceActivity.class);
+        startActivity(intent);
+    }
+}

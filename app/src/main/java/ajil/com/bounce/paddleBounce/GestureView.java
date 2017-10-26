@@ -1,12 +1,10 @@
-package ajil.com.bounce;
+package ajil.com.bounce.paddleBounce;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Toast;
 
 /**
  * Created by ajilo on 25-10-2017.

@@ -1,9 +1,8 @@
-package ajil.com.bounce;
+package ajil.com.bounce.paddleBounce;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
-import android.widget.ImageView;
 
 /**
  * Created by ajilo on 25-10-2017.

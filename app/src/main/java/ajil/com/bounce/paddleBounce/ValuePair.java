@@ -1,4 +1,4 @@
-package ajil.com.bounce;
+package ajil.com.bounce.paddleBounce;
 
 /**
  * Created by ajilo on 25-10-2017.

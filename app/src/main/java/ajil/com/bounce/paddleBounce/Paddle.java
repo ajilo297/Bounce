@@ -1,4 +1,4 @@
-package ajil.com.bounce;
+package ajil.com.bounce.paddleBounce;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
