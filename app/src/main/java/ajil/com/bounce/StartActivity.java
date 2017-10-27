@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
-import ajil.com.bounce.obstructionBounce.PaddleBounceActivity;
+import ajil.com.bounce.newBounce.NewBounceActivity;
 
 public class StartActivity extends AppCompatActivity {
 
@@ -28,7 +28,7 @@ public class StartActivity extends AppCompatActivity {
     }
 
     public void startBounce(View view) {
-        Intent intent = new Intent(context, PaddleBounceActivity.class);
+        Intent intent = new Intent(context, NewBounceActivity.class);
         startActivity(intent);
     }
 }

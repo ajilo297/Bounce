@@ -13,7 +13,7 @@
         android:theme="@style/BounceTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".first.MainActivity" />
-        <activity android:name=".paddleBounce.BounceActivity"></activity>
+        <activity android:name=".paddleBounce.BounceActivity" />
         <activity android:name=".StartActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,7 +21,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".obstructionBounce.PaddleBounceActivity"></activity>
+        <activity android:name=".obstructionBounce.PaddleBounceActivity" />
+        <activity android:name=".newBounce.NewBounceActivity"></activity>
     </application>
 
 </manifest>
