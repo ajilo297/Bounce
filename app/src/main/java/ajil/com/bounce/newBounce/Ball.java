@@ -32,7 +32,7 @@ public class Ball extends AppCompatImageView {
     private OnBallMovedListener listener;
     private float time = 0.1f;
     private static final float g = 1f;
-    private static final int MAXIMUM_SPEED = 50;
+    private static final int MAXIMUM_SPEED = 15;
     private static final int MINIMUM_SPEED = 10;
     private boolean isStopped = false;
 
@@ -42,6 +42,7 @@ public class Ball extends AppCompatImageView {
             drawable = ContextCompat.getDrawable(context, R.drawable.ball);
         }
         setImageDrawable(drawable);
+        this.setEnabled(false);
         movementHandler = new Handler();
         listener = (OnBallMovedListener) context;
     }
@@ -129,6 +130,7 @@ public class Ball extends AppCompatImageView {
             if (getNextX() <= paddle.getLeftCornerX() || getNextX() >= paddle.getRightCornerX()) {
                 uY *= -1;
             } else {
+                this.lightUp();
                 paddle.lightUp();
 //            double pow1;
 //            if (uX < 0) {
@@ -195,15 +197,27 @@ public class Ball extends AppCompatImageView {
         return getCenterY() + deltaY;
     }
 
+    public void lightUp() {
+        this.setEnabled(true);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Ball.this.setEnabled(false);
+            }
+        }, 100);
+    }
+
     private HashMap<String, Float> handleFieldObstruction(FrameLayout field) {
         HashMap<String, Float> data = new HashMap<>();
         if ((getNextX() - getRadius() <= field.getX() && uX < 0) || (getNextX() + getRadius() >= field.getWidth() && uX > 0)) {
             uX *= -1;
+            this.lightUp();
             if (isGravityOn())
                 uX = uX * 1/3;
         }
         if (getNextY() - getRadius() <= field.getY() && uY < 0) {
             uY *= -1;
+            this.lightUp();
         } else if (getNextY() + getRadius() >= field.getHeight() && uY > 0) {
 //            uY *= -1;
             if (isGravityOn())

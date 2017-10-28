@@ -53,15 +53,21 @@ public class NewBounceActivity extends AppCompatActivity implements OnBallMovedL
     }
 
     private void addBall() {
-        Ball ball = new Ball(context);
+        final Ball ball = new Ball(context);
         field.addView(ball,new FrameLayout.LayoutParams(ball.getDrawWidth(),ball.getDrawHeight()));
         int min = (int) ball.getRadius();
         Log.e(TAG, "Min" + min);
-        ball.setCenter(getRandomCoordinate(field.getWidth() - 40, min + 40),
-                getRandomCoordinate(field.getHeight() - 40, min + 40));
+//        ball.setCenter(getRandomCoordinate(field.getWidth() - 40, min + 40), getRandomCoordinate(field.getHeight() - 40, min + 40));
+        ball.setCenter(field.getWidth()/2,field.getHeight()/4);
         arrayList.add(new Obstructor(StartActivity.TYPE_BALL, ball));
         ball.setGravityMode(false);
-        ball.startMove();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ball.startMove();
+            }
+        }, 1000);
+//        ball.startMove();
     }
 
     private int getRandomCoordinate(int max, int min) {
