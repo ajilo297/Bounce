@@ -8,4 +8,6 @@ import java.util.ArrayList;
 
 public interface OnBallMovedListener {
     ArrayList<Obstructor> onMoved(float centerX, float centerY);
+
+    void disqualify(Ball ball, Paddle paddle);
 }

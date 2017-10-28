@@ -10,6 +10,8 @@ import android.widget.FrameLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import ajil.com.bounce.R;
 import ajil.com.bounce.StartActivity;
@@ -28,8 +30,11 @@ public class Ball extends AppCompatImageView {
     private static final float t = 1f;
     private static final String TAG = "BALL";
     private OnBallMovedListener listener;
-    private final float g = 1f;
     private float time = 0.1f;
+    private static final float g = 1f;
+    private static final int MAXIMUM_SPEED = 50;
+    private static final int MINIMUM_SPEED = 10;
+    private boolean isStopped = false;
 
     public Ball(Context context) {
         super(context);
@@ -68,6 +73,13 @@ public class Ball extends AppCompatImageView {
         movementHandler.post(moveControl);
     }
 
+    public void startMove() {
+        this.uX = getRandomSpeed();
+        this.uY = getRandomSpeed();
+        movementHandler.post(moveControl);
+        isStopped = false;
+    }
+
     public void setGravityMode(boolean gravityMode) {
         this.gravityMode = gravityMode;
     }
@@ -76,7 +88,8 @@ public class Ball extends AppCompatImageView {
         @Override
         public void run() {
             move();
-            movementHandler.post(moveControl);
+            if (!isStopped)
+                movementHandler.post(moveControl);
         }
     };
 
@@ -97,11 +110,45 @@ public class Ball extends AppCompatImageView {
                     data =  handleFieldObstruction((FrameLayout) obstructor.getObject());
                 } else if (obstructor.getType() == StartActivity.TYPE_BALL) {
                     data = handleBallObstruction((Ball) obstructor.getObject());
+                } else if (obstructor.getType() == StartActivity.TYPE_PADDLE) {
+                    data = handlePaddleObstruction((Paddle) obstructor.getObject());
                 }
             }
         }
 
         setCenter(data.get("x"),data.get("y"));
+    }
+
+    private HashMap<String, Float> handlePaddleObstruction(Paddle paddle) {
+        HashMap<String, Float> data = new HashMap<>();
+        if (getCenterY() + getRadius() >= paddle.getCornerY()) {
+            listener.disqualify(this,paddle);
+        }
+        if (getNextY() + getRadius() >= paddle.getY() && uY > 0) {
+            uY *= -1;
+            if (getNextX() <= paddle.getLeftCornerX() || getNextX() >= paddle.getRightCornerX()) {
+                uY *= -1;
+            } else {
+                paddle.lightUp();
+//            double pow1;
+//            if (uX < 0) {
+//                pow1 = getNextX() - paddle.getLeftCornerX();
+//            } else {
+//                pow1 = getNextX() - paddle.getRightCornerX();
+//            }
+//            double pow2 = getNextY() - paddle.getCornerY();
+//
+//            double distance = Math.sqrt(Math.pow(pow1, 2) + Math.pow(pow2, 2));
+//            if (distance <= getRadius()) {
+//                uY *= -1;
+//            }
+            }
+        }
+
+        data.put("x", getNextX());
+        data.put("y", getNextY());
+
+        return data;
     }
 
     private HashMap<String, Float> handleBallObstruction(Ball ball) {
@@ -129,11 +176,21 @@ public class Ball extends AppCompatImageView {
     }
 
     public float getNextX() {
+        if (isGravityOn())
+            if (Math.abs(uX) <=2 )
+                uX = 0;
+            if (uY == 0)
+                uX = uX/1.111f;
         float deltaX = this.uX * t;
         return getCenterX() + deltaX;
     }
 
     public float getNextY() {
+        if (isGravityOn()) {
+            this.uY = uY + (g * t * 3);
+            if (Math.abs(uY) < 2)
+                uY = 0;
+        }
         float deltaY = this.uY * t;
         return getCenterY() + deltaY;
     }
@@ -142,11 +199,15 @@ public class Ball extends AppCompatImageView {
         HashMap<String, Float> data = new HashMap<>();
         if ((getNextX() - getRadius() <= field.getX() && uX < 0) || (getNextX() + getRadius() >= field.getWidth() && uX > 0)) {
             uX *= -1;
-            time = 0;
+            if (isGravityOn())
+                uX = uX * 1/3;
         }
-        if ((getNextY() - getRadius() <= field.getY() && uY < 0) || (getNextY() + getRadius() >= field.getHeight() && uY > 0)) {
+        if (getNextY() - getRadius() <= field.getY() && uY < 0) {
             uY *= -1;
-            time = 0;
+        } else if (getNextY() + getRadius() >= field.getHeight() && uY > 0) {
+//            uY *= -1;
+            if (isGravityOn())
+                uY = uY * -1/5;
         }
         data.put("x", getNextX());
         data.put("y", getNextY());
@@ -178,5 +239,21 @@ public class Ball extends AppCompatImageView {
 
     public float getCenterY() {
         return getY() + (getDrawHeight() / 2);
+    }
+
+    public int getRandomSpeed() {
+        Random random = new Random();
+        int speed = random.nextInt(MAXIMUM_SPEED - MINIMUM_SPEED) + MINIMUM_SPEED;
+        int direction = random.nextInt(2);
+        if (direction == 0) {
+            return speed;
+        }
+        return speed * -1;
+    }
+
+    public void stopMove() {
+        movementHandler.removeCallbacks(moveControl);
+        invalidate();
+        isStopped = true;
     }
 }

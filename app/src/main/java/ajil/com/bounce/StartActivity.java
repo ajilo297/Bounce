@@ -12,9 +12,10 @@ public class StartActivity extends AppCompatActivity {
 
     public static final int TYPE_BALL = 1;
     public static final int TYPE_FIELD = 2;
+    public static final int TYPE_PADDLE = 3;
 
-    public static final int TYPE_VERTICAL = 3;
-    public static final int TYPE_HORIZONTAL = 4;
+    public static final int TYPE_VERTICAL = 13;
+    public static final int TYPE_HORIZONTAL = 14;
 //    public static final int TYPE_FIELD = 0;
 //    public static final int TYPE_FIELD = 0;
 

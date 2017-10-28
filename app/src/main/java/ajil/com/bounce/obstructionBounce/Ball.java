@@ -27,7 +27,7 @@ public class Ball extends AppCompatImageView {
     private OnBallReadyForMoveListener listener;
     private static final String TAG = "BALL";
     private boolean gravityMode;
-    private float a = 0.1f;
+    private float a = 1f;
     private float time = 0;
     private int counter = 0;
     public int object_type = StartActivity.TYPE_BALL;
@@ -118,27 +118,30 @@ public class Ball extends AppCompatImageView {
     }
 
     private void moveBall() {
-        if (isGravityOn()) {
-            gravityAcceleration();
-        }
+
 
         Obstructor obstructor = listener.checkForObstruction(this);
-        if (obstructor != null) {
-            handleObstruction(obstructor);
-        } else {
-            this.setCenter(getNextX(),getNextY());
+        if (obstructor != null && !handleObstruction(obstructor)) {
+            return;
+        }
+        this.setCenter(getNextX(), getNextY());
+        if (isGravityOn()) {
+            gravityAcceleration();
+//            accelerateWithGravity();
         }
     }
 
-    private void handleObstruction(Obstructor obstructor) {
-//        this.lightUp(20);
+    private Boolean handleObstruction(Obstructor obstructor) {
         if (obstructor.getType() == StartActivity.TYPE_FIELD) {
             if (obstructor.getObstruction() == StartActivity.TYPE_VERTICAL) {
                 setUx(getUx() * -1);
-            } else if (obstructor.getObstruction() == StartActivity.TYPE_HORIZONTAL) {
+            }
+            if (obstructor.getObstruction() == StartActivity.TYPE_HORIZONTAL) {
                 setUy(getUy() * -1);
             }
-        } else if (obstructor.getType() == StartActivity.TYPE_BALL) {
+            return true;
+        }
+        if (obstructor.getType() == StartActivity.TYPE_BALL) {
 
             Ball object = (Ball) obstructor.getObject();
 
@@ -150,9 +153,25 @@ public class Ball extends AppCompatImageView {
 
             float distance = (float) Math.sqrt(Math.pow(ballNextX - objectNextX, 2) + Math.pow(ballNextY - objectNextY, 2));
             if (distance <= this.getRadius() + object.getRadius()) {
-                
+                handleBallContact(object);
             }
+            return true;
         }
+        return false;
+    }
+
+    private void handleBallContact(Ball object) {
+        float buX = this.getUx();
+        float buY = this.getUy();
+
+        float ouX = object.getUx();
+        float ouY = object.getUy();
+
+        object.setUx(buX);
+        object.setUy(buY);
+
+        this.setUy(ouX);
+        this.setUy(ouY);
     }
 
     public void lightUp (long time) {
@@ -177,6 +196,11 @@ public class Ball extends AppCompatImageView {
             time = 0.3f;
         }
         this.uy =  vy;
+    }
+
+    public void accelerateWithGravity () {
+        this.setUy(this.getUy() + (0.001f * t));
+//        this.uy = vy;
     }
 
     public float getNextX () {

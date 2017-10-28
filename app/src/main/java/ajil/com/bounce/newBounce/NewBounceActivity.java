@@ -4,18 +4,21 @@ import android.content.Context;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import ajil.com.bounce.R;
 import ajil.com.bounce.StartActivity;
 
-public class NewBounceActivity extends AppCompatActivity implements OnBallMovedListener{
+public class NewBounceActivity extends AppCompatActivity implements OnBallMovedListener, OnPanListener{
 
     private GameField field;
     private Context context;
+    private static final String TAG = "NEWBOUNCE";
     private ArrayList<Obstructor> arrayList = new ArrayList<>();
 
     @Override
@@ -30,57 +33,68 @@ public class NewBounceActivity extends AppCompatActivity implements OnBallMovedL
             public void onGlobalLayout() {
                 field.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 arrayList.add(new Obstructor(StartActivity.TYPE_FIELD, field));
+                addPaddle();
                 addBall();
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        addBall2();
-                    }
-                }, 3000);
-
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        addBall2();
-                    }
-                }, 5000);
             }
         });
     }
 
-    private void addBall() {
-        final Ball ball = new Ball(context);
-        field.addView(ball,new FrameLayout.LayoutParams(ball.getDrawWidth(),ball.getDrawHeight()));
-        float frameCenterX = field.getWidth() / 2;
-        float frameCenterY = field.getHeight() / 2;
-        ball.setCenter(frameCenterX, frameCenterY);
-        arrayList.add(new Obstructor(StartActivity.TYPE_BALL,ball));
-        ball.setGravityMode(false);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                ball.startMove(30, -20);
-            }
-        }, 1000);
+    private void addPaddle() {
+        Paddle paddle = new Paddle(context);
+        float width = field.getWidth() / 3;
+        float height = width / 10;
+        field.addView(paddle, new FrameLayout.LayoutParams((int) width, (int) height));
+        paddle.setCenterX(field.getWidth() / 2);
+        paddle.setFieldOrigin(field.getX());
+        paddle.setFieldWidth(field.getWidth());
+        paddle.setFieldHeight(field.getHeight());
+        paddle.setCenterY(field.getHeight() - (height / 2));
+        arrayList.add(new Obstructor(StartActivity.TYPE_PADDLE, paddle));
     }
 
-    private void addBall2() {
-        final Ball ball = new Ball(context);
+    private void addBall() {
+        Ball ball = new Ball(context);
         field.addView(ball,new FrameLayout.LayoutParams(ball.getDrawWidth(),ball.getDrawHeight()));
-        float frameCenterX = field.getWidth() / 2;
-        float frameCenterY = field.getHeight() / 2;
-        ball.setCenter(frameCenterX, frameCenterY);
-        arrayList.add(new Obstructor(StartActivity.TYPE_BALL,ball));
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                ball.startMove(-3, 8);
-            }
-        }, 1000);
+        int min = (int) ball.getRadius();
+        Log.e(TAG, "Min" + min);
+        ball.setCenter(getRandomCoordinate(field.getWidth() - 40, min + 40),
+                getRandomCoordinate(field.getHeight() - 40, min + 40));
+        arrayList.add(new Obstructor(StartActivity.TYPE_BALL, ball));
+        ball.setGravityMode(false);
+        ball.startMove();
+    }
+
+    private int getRandomCoordinate(int max, int min) {
+        Random random = new Random();
+        return random.nextInt(max - min) + min;
     }
 
     @Override
     public ArrayList<Obstructor> onMoved(float centerX, float centerY) {
         return arrayList;
+    }
+
+    @Override
+    public void disqualify(Ball ball, Paddle paddle) {
+        ball.stopMove();
+        paddle.stopPaddle();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                finish();
+            }
+        }, 2000);
+
+    }
+
+    @Override
+    public void updatePaddleLocation(float x) {
+        for (Obstructor obstructor : arrayList) {
+            if (obstructor.getType() == StartActivity.TYPE_PADDLE) {
+                Paddle paddle = (Paddle) obstructor.getObject();
+                paddle.setmX(x);
+            }
+        }
     }
 }
