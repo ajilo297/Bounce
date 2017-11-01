@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -35,9 +36,50 @@ public class NewBounceActivity extends AppCompatActivity implements OnBallMovedL
                 arrayList.add(new Obstructor(StartActivity.TYPE_FIELD, field));
                 addPaddle();
                 addBall();
+                addBlocks();
+
+                int count = 0;
+                for (Obstructor obstructor : arrayList) {
+                    if (obstructor.getType() == StartActivity.TYPE_BLOCK) {
+                        count++;
+                    }
+                }
+                Toast.makeText(context, "Count = " + count, Toast.LENGTH_SHORT).show();
             }
         });
     }
+
+    private void addBlocks() {
+        Block block = new Block(context);
+
+        int dim = block.getDrawWidth();
+        field.addView(block,new FrameLayout.LayoutParams(dim,dim));
+        block.setX((field.getWidth() / 2) - (dim / 2));
+        block.setY((field.getHeight() / 2) - (dim / 2));
+        arrayList.add(new Obstructor(StartActivity.TYPE_BLOCK, block));
+
+//        int vCount = (int) ((field.getHeight() / block.getDrawHeight()) / 4);
+//        int dim = block.getDrawWidth();
+//
+//        int y = dim * 2;
+//        int x = dim * 2;
+//        while (vCount > 1) {
+//            Block b = new Block(context);
+//            b.setX(x);
+//            b.setY(y);
+//            if (b.getX() + (dim * 3) > field.getWidth()) {
+//                y += dim;
+//                x = dim * 2;
+//                vCount -= 1;
+//            } else {
+//                x += dim;
+//            }
+//            field.addView(b, new FrameLayout.LayoutParams(dim, dim));
+//            arrayList.add(new Obstructor(StartActivity.TYPE_BLOCK, b));
+//        }
+    }
+
+
 
     private void addPaddle() {
         Paddle paddle = new Paddle(context);
@@ -57,8 +99,7 @@ public class NewBounceActivity extends AppCompatActivity implements OnBallMovedL
         field.addView(ball,new FrameLayout.LayoutParams(ball.getDrawWidth(),ball.getDrawHeight()));
         int min = (int) ball.getRadius();
         Log.e(TAG, "Min" + min);
-//        ball.setCenter(getRandomCoordinate(field.getWidth() - 40, min + 40), getRandomCoordinate(field.getHeight() - 40, min + 40));
-        ball.setCenter(field.getWidth()/2,field.getHeight()/4);
+        ball.setCenter(field.getWidth() / 2, field.getHeight() * 1.5f / 2);
         arrayList.add(new Obstructor(StartActivity.TYPE_BALL, ball));
         ball.setGravityMode(false);
         new Handler().postDelayed(new Runnable() {
@@ -67,12 +108,22 @@ public class NewBounceActivity extends AppCompatActivity implements OnBallMovedL
                 ball.startMove();
             }
         }, 1000);
-//        ball.startMove();
     }
 
     private int getRandomCoordinate(int max, int min) {
         Random random = new Random();
         return random.nextInt(max - min) + min;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        for (Obstructor obstructor : arrayList) {
+            if (obstructor.getType() == StartActivity.TYPE_BALL) {
+                Ball ball = (Ball) obstructor.getObject();
+                ball.stopMove();
+            }
+        }
     }
 
     @Override
@@ -84,7 +135,6 @@ public class NewBounceActivity extends AppCompatActivity implements OnBallMovedL
     public void disqualify(Ball ball, Paddle paddle) {
         ball.stopMove();
         paddle.stopPaddle();
-
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {

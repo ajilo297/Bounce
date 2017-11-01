@@ -22,18 +22,24 @@ import ajil.com.bounce.StartActivity;
 
 public class Ball extends AppCompatImageView {
 
+    private static final int BLOCK_COLLISION_NONE = 0;
+    private static final int BLOCK_COLLISION_LEFT = 1;
+    private static final int BLOCK_COLLISION_TOP = 2;
+    private static final int BLOCK_COLLISION_RIGHT = 3;
+    private static final int BLOCK_COLLISION_BOTTOM = 4;
+    private static final int BLOCK_COLLISION_CORNER = 5;
+    private static final int MINIMUM_SPEED = 10;
+    private static final int MAXIMUM_SPEED = 15;
+    private static final String TAG = "BALL";
+    private static final float t = 1f;
+    private static final float g = 1f;
     private Drawable drawable;
     private int mass = 10;
     private float uX, uY;
     public Handler movementHandler;
     private Boolean gravityMode = false;
-    private static final float t = 1f;
-    private static final String TAG = "BALL";
     private OnBallMovedListener listener;
     private float time = 0.1f;
-    private static final float g = 1f;
-    private static final int MAXIMUM_SPEED = 15;
-    private static final int MINIMUM_SPEED = 10;
     private boolean isStopped = false;
 
     public Ball(Context context) {
@@ -113,11 +119,87 @@ public class Ball extends AppCompatImageView {
                     data = handleBallObstruction((Ball) obstructor.getObject());
                 } else if (obstructor.getType() == StartActivity.TYPE_PADDLE) {
                     data = handlePaddleObstruction((Paddle) obstructor.getObject());
+                } else if (obstructor.getType() == StartActivity.TYPE_BLOCK) {
+                    data = handleBlockObstruction((Block) obstructor.getObject());
                 }
             }
         }
 
         setCenter(data.get("x"),data.get("y"));
+    }
+
+    private HashMap<String, Float> handleBlockObstruction(Block block) {
+        HashMap<String, Float> data = new HashMap<>();
+
+//        int i = getCollisionType(object);
+//        if (i == BLOCK_COLLISION_TOP) {
+//            uY *= -1;
+//        } else if (i == BLOCK_COLLISION_RIGHT) {
+//            uX *= -1;
+//        } else if (i == BLOCK_COLLISION_BOTTOM) {
+//            uY *= -1;
+//        } else if (i == BLOCK_COLLISION_LEFT) {
+//            uX *= -1;
+//        }
+
+//        double pow1 = getNextX() - block.getCenterX();
+//        double pow2 = getNextY() - block.getCenterY();
+//
+//        double distance = Math.sqrt(Math.pow(pow1, 2) + Math.pow(pow2,2));
+//        if (distance <= (this.getRadius() + block.getRadius())) {
+//
+//            int type = getCollisionType(block);
+//            if (type == BLOCK_COLLISION_TOP && uY > 0) {
+//                uY *= -1;
+//            } else if (type == BLOCK_COLLISION_BOTTOM && uY < 0) {
+//                uY *= -1;
+//            } else if (type == BLOCK_COLLISION_LEFT && uX > 0) {
+//                uX *= -1;
+//            } else if (type == BLOCK_COLLISION_RIGHT && uX < 0) {
+//                uX *= -1;
+//            } else if (type == BLOCK_COLLISION_CORNER) {
+//                uX *= -1;
+//                uY *= -1;
+//            }
+//        }
+
+
+
+
+
+        data.put("x", getNextX());
+        data.put("y", getNextY());
+
+        return data;
+    }
+
+    private int getCollisionType(Block block) {
+
+//        if (getNextX() + getRadius() < block.getCenterX() + block.getRadius()) {
+//        }
+
+        if (getNextX() + getRadius() >= block.getX() && uX > 0) {
+            if (getNextY() + getRadius() >= block.getY() && getNextY() - getRadius() <= block.getY() + block.getDrawHeight()) {
+                return BLOCK_COLLISION_LEFT;
+            }
+        } else {
+            if (getNextX() - getRadius() <= block.getX() + block.getDrawWidth() && uX < 0) {
+                if (getNextY() + getRadius() >= block.getY() && getNextY() - getRadius() <= block.getY() + block.getDrawHeight()) {
+                    return BLOCK_COLLISION_RIGHT;
+                }
+            } else if (getNextY() + getRadius() >= block.getY() && uY > 0) {
+                if (getNextX() + getRadius() >= block.getX() && getNextX() - getRadius() <= block.getX() + block.getDrawWidth()) {
+                    return BLOCK_COLLISION_TOP;
+                }
+            } else if (getNextY() - getRadius() <= block.getY() + block.getDrawWidth() && uY < 0) {
+                if (getNextX() + getRadius() >= block.getX() && getNextX() - getRadius() <= block.getX() + block.getDrawWidth()) {
+                    return BLOCK_COLLISION_BOTTOM;
+                }
+            } else {
+                return BLOCK_COLLISION_CORNER;
+            }
+        }
+        return BLOCK_COLLISION_NONE;
     }
 
     private HashMap<String, Float> handlePaddleObstruction(Paddle paddle) {
@@ -181,8 +263,8 @@ public class Ball extends AppCompatImageView {
         if (isGravityOn())
             if (Math.abs(uX) <=2 )
                 uX = 0;
-            if (uY == 0)
-                uX = uX/1.111f;
+        if (uY == 0)
+            uX = uX/1.111f;
         float deltaX = this.uX * t;
         return getCenterX() + deltaX;
     }
