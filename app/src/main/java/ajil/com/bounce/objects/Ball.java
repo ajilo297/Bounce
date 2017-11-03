@@ -190,27 +190,6 @@ public class Ball extends AppCompatImageView {
         setCenter(data.get("x"),data.get("y"));
     }
 
-//    private HashMap<String, Float> handlePaddleObstruction(Paddle paddle_normal) {
-//        HashMap<String, Float> data = new HashMap<>();
-//        if (getCenterY() + getRadius() >= paddle_normal.getCornerY()) {
-//            listener.disqualify(this,paddle_normal);
-//        }
-//        if (getNextY() + getRadius() >= paddle_normal.getY() && uY > 0) {
-//            uY *= -1;
-//            if (getNextX() <= paddle_normal.getLeftCornerX() || getNextX() >= paddle_normal.getRightCornerX()) {
-//                uY *= -1;
-//            } else {
-//                this.lightUp();
-//                paddle_normal.lightUp();
-//            }
-//        }
-//
-//        data.put("x", getNextX());
-//        data.put("y", getNextY());
-//
-//        return data;
-//    }
-
     private HashMap<String, Float> handleBallObstruction(Ball ball) {
         HashMap<String, Float> data = new HashMap<>();
 
