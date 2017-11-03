@@ -15,7 +15,7 @@ import java.util.Random;
 import ajil.com.bounce.R;
 import ajil.com.bounce.StartActivity;
 
-public class NewBounceActivity extends AppCompatActivity implements OnBallMovedListener, OnPanListener{
+public class NewBounceActivity extends AppCompatActivity implements OnBallMovedListener, OnPanListener, OnBlockHitListener{
 
     private GameField field;
     private Context context;
@@ -51,32 +51,34 @@ public class NewBounceActivity extends AppCompatActivity implements OnBallMovedL
 
     private void addBlocks() {
         Block block = new Block(context);
-
-        int dim = block.getDrawWidth();
-        field.addView(block,new FrameLayout.LayoutParams(dim,dim));
-        block.setX((field.getWidth() / 2) - (dim / 2));
-        block.setY((field.getHeight() / 2) - (dim / 2));
-        arrayList.add(new Obstructor(StartActivity.TYPE_BLOCK, block));
-
-//        int vCount = (int) ((field.getHeight() / block.getDrawHeight()) / 4);
-//        int dim = block.getDrawWidth();
 //
-//        int y = dim * 2;
-//        int x = dim * 2;
-//        while (vCount > 1) {
-//            Block b = new Block(context);
-//            b.setX(x);
-//            b.setY(y);
-//            if (b.getX() + (dim * 3) > field.getWidth()) {
-//                y += dim;
-//                x = dim * 2;
-//                vCount -= 1;
-//            } else {
-//                x += dim;
-//            }
-//            field.addView(b, new FrameLayout.LayoutParams(dim, dim));
-//            arrayList.add(new Obstructor(StartActivity.TYPE_BLOCK, b));
-//        }
+//        int dim = block.getDrawWidth();
+//        field.addView(block,new FrameLayout.LayoutParams(dim,dim));
+//        block.setX((field.getWidth() / 2) - (dim / 2));
+//        block.setY((field.getHeight() / 2) - (dim / 2));
+//        arrayList.add(new Obstructor(StartActivity.TYPE_BLOCK, block));
+
+        int vCount = (int) ((field.getHeight() / block.getDrawHeight()) / 4);
+        int dim = block.getDrawWidth();
+        int index = 0;
+        int y = dim * 2;
+        int x = dim * 2;
+        while (vCount > 1) {
+            Block b = new Block(context);
+            b.setX(x);
+            b.setY(y);
+            if (b.getX() + (dim * 3) > field.getWidth()) {
+                y += dim;
+                x = dim * 2;
+                vCount -= 1;
+            } else {
+                x += dim;
+            }
+            b.setIndex(index);
+            field.addView(b, new FrameLayout.LayoutParams(dim, dim));
+            arrayList.add(new Obstructor(StartActivity.TYPE_BLOCK, b));
+            index += 1;
+        }
     }
 
 
@@ -105,7 +107,7 @@ public class NewBounceActivity extends AppCompatActivity implements OnBallMovedL
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                ball.startMove();
+                ball.startMove(10,-20);
             }
         }, 1000);
     }
@@ -152,5 +154,19 @@ public class NewBounceActivity extends AppCompatActivity implements OnBallMovedL
                 paddle.setmX(x);
             }
         }
+    }
+
+    @Override
+    public boolean onHit(Block block) {
+        for (Obstructor obstructor : arrayList) {
+            if (obstructor.getType() == StartActivity.TYPE_BLOCK) {
+                Block b = (Block) obstructor.getObject();
+                if (b.getIndex() == block.getIndex()) {
+                    field.removeView(block);
+                    return arrayList.remove(obstructor);
+                }
+            }
+        }
+        return false;
     }
 }

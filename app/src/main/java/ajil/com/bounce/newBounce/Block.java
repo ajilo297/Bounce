@@ -13,6 +13,7 @@ import ajil.com.bounce.R;
 
 public class Block extends AppCompatImageView {
     private Drawable drawable;
+    private int index;
     public Block(Context context) {
         super(context);
         drawable = ContextCompat.getDrawable(context, R.drawable.block);
@@ -40,4 +41,11 @@ public class Block extends AppCompatImageView {
         return getY() + (getDrawHeight() / 2);
     }
 
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
 }
