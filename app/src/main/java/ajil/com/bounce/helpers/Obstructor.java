@@ -1,4 +1,4 @@
-package ajil.com.bounce.newBounce;
+package ajil.com.bounce.helpers;
 
 /**
  * Created by ajil on 27/10/17.

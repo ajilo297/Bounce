@@ -1,38 +1,51 @@
-package ajil.com.bounce.newBounce;
+package ajil.com.bounce;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Random;
 
-import ajil.com.bounce.R;
-import ajil.com.bounce.StartActivity;
+import ajil.com.bounce.helpers.Obstructor;
+import ajil.com.bounce.helpers.OnBallMovedListener;
+import ajil.com.bounce.helpers.OnBlockHitListener;
+import ajil.com.bounce.helpers.OnPanListener;
+import ajil.com.bounce.objects.Ball;
+import ajil.com.bounce.objects.Block;
+import ajil.com.bounce.objects.GameField;
+import ajil.com.bounce.objects.Paddle;
 
-public class NewBounceActivity extends AppCompatActivity implements OnBallMovedListener, OnPanListener, OnBlockHitListener{
+public class BounceActivity extends AppCompatActivity implements OnBallMovedListener, OnPanListener, OnBlockHitListener {
 
     private GameField field;
     private Context context;
     private static final String TAG = "NEWBOUNCE";
     private ArrayList<Obstructor> arrayList = new ArrayList<>();
+    private FrameLayout gameOverScreen;
+    private TextView msgText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_bounce);
+        setContentView(R.layout.activity_bounce);
 
-        context = NewBounceActivity.this;
+        context = BounceActivity.this;
         field = findViewById(R.id.field);
         field.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 field.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                gameOverScreen = findViewById(R.id.gameOverScreen);
+                msgText = findViewById(R.id.msgText);
                 arrayList.add(new Obstructor(StartActivity.TYPE_FIELD, field));
                 addPaddle();
                 addBall();
@@ -51,12 +64,6 @@ public class NewBounceActivity extends AppCompatActivity implements OnBallMovedL
 
     private void addBlocks() {
         Block block = new Block(context);
-//
-//        int dim = block.getDrawWidth();
-//        field.addView(block,new FrameLayout.LayoutParams(dim,dim));
-//        block.setX((field.getWidth() / 2) - (dim / 2));
-//        block.setY((field.getHeight() / 2) - (dim / 2));
-//        arrayList.add(new Obstructor(StartActivity.TYPE_BLOCK, block));
 
         int vCount = (int) ((field.getHeight() / block.getDrawHeight()) / 4);
         int dim = block.getDrawWidth();
@@ -107,7 +114,7 @@ public class NewBounceActivity extends AppCompatActivity implements OnBallMovedL
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                ball.startMove(10,-20);
+                ball.startMove();
             }
         }, 1000);
     }
@@ -129,13 +136,30 @@ public class NewBounceActivity extends AppCompatActivity implements OnBallMovedL
     }
 
     @Override
-    public ArrayList<Obstructor> onMoved(float centerX, float centerY) {
+    public ArrayList<Obstructor> onMoved(Ball ball, float centerX, float centerY) {
+        int count = 0;
+        for (Obstructor obstructor : arrayList) {
+            if (obstructor.getType() == StartActivity.TYPE_BLOCK) {
+                count++;
+            }
+        }
+        if (count==0) {
+            showGameOverScreen(getResources().getString(R.string.game_won_msg));
+            ball.stopMove();
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    finish();
+                }
+            }, 2000);
+        }
         return arrayList;
     }
 
     @Override
     public void disqualify(Ball ball, Paddle paddle) {
         ball.stopMove();
+        showGameOverScreen(getResources().getString(R.string.game_over_msg));
         paddle.stopPaddle();
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -157,16 +181,23 @@ public class NewBounceActivity extends AppCompatActivity implements OnBallMovedL
     }
 
     @Override
-    public boolean onHit(Block block) {
+    public void onHit(Block block) {
         for (Obstructor obstructor : arrayList) {
             if (obstructor.getType() == StartActivity.TYPE_BLOCK) {
                 Block b = (Block) obstructor.getObject();
                 if (b.getIndex() == block.getIndex()) {
                     field.removeView(block);
-                    return arrayList.remove(obstructor);
+                    arrayList.remove(obstructor);
+                    return;
                 }
             }
         }
-        return false;
+    }
+
+    private void showGameOverScreen(String message) {
+        gameOverScreen.setVisibility(View.VISIBLE);
+        gameOverScreen.setClickable(true);
+        gameOverScreen.animate().alpha(1).setDuration(400).setInterpolator(new AccelerateDecelerateInterpolator());
+        msgText.setText(message);
     }
 }

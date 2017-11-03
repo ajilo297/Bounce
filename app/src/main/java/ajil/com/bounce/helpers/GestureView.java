@@ -1,4 +1,4 @@
-package ajil.com.bounce.newBounce;
+package ajil.com.bounce.helpers;
 
 import android.content.Context;
 import android.support.annotation.Nullable;

@@ -2,11 +2,9 @@ package ajil.com.bounce;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-
-import ajil.com.bounce.newBounce.NewBounceActivity;
 
 public class StartActivity extends AppCompatActivity {
 
@@ -28,7 +26,7 @@ public class StartActivity extends AppCompatActivity {
     }
 
     public void startBounce(View view) {
-        Intent intent = new Intent(context, NewBounceActivity.class);
+        Intent intent = new Intent(context, BounceActivity.class);
         startActivity(intent);
     }
 }

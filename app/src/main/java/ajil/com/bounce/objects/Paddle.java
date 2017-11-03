@@ -1,4 +1,4 @@
-package ajil.com.bounce.newBounce;
+package ajil.com.bounce.objects;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -27,7 +27,7 @@ public class Paddle extends AppCompatImageView{
     public Paddle(Context context) {
         super(context);
         if (this.drawable == null) {
-            drawable = ContextCompat.getDrawable(context, R.drawable.paddle_bounce);
+            drawable = ContextCompat.getDrawable(context, R.drawable.paddle);
             this.setImageDrawable(drawable);
             this.setScaleType(ScaleType.FIT_XY);
             this.setEnabled(false);
