@@ -143,6 +143,14 @@ public class Ball extends AppCompatImageView {
                             uY *= -1;
                             uX *= -1;
                         }
+
+                        int hotspotWidth = paddle.getDrawWidth() / 6;
+                        if (this.getCenterX() < paddle.getX() + hotspotWidth) {
+                            uX = -1 * Math.abs(uX);
+                        } else if (this.getCenterX() > paddle.getRightCornerX() - hotspotWidth) {
+                            uX = 1 * Math.abs(uX);
+                        }
+
                         willCollide = true;
                         paddle.lightUp();
                     }
